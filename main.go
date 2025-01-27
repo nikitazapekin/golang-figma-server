@@ -1,36 +1,32 @@
 package main
 
 import (
-	"net/http"
-	"todo-app/controllers"
-	"todo-app/db"
-	"github.com/gorilla/mux"
-	"github.com/rs/cors"
+    "net/http"
+
+    "todo-app/db"
+    "todo-app/router"
+
+    "github.com/gorilla/mux"
+    "github.com/rs/cors"
 )
 
 func main() {
-	 
-	db.InitDB()
+    db.InitDB()
 
-	 
-	r := mux.NewRouter()
+    r := mux.NewRouter()
 
-	 
-	r.HandleFunc("/register", controllers.Register).Methods("POST")
-	r.HandleFunc("/login", controllers.Login).Methods("POST")
+    router.InitRoutes(r)  
 
-	// Настройка CORS
-	corsHandler := cors.New(cors.Options{
-		AllowedOrigins: []string{"http://localhost:3000"}, 
-		AllowedMethods: []string{"GET", "POST", "PUT", "DELETE"},  
-		AllowedHeaders: []string{"Content-Type"}, 
-		AllowCredentials: true,  
-	})
+    corsHandler := cors.New(cors.Options{
+        AllowedOrigins:   []string{"http://localhost:3000"},
+        AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE"},
+        AllowedHeaders:   []string{"Content-Type"},
+        AllowCredentials: true,
+    })
 
- 
-	handler := corsHandler.Handler(r)
+    handler := corsHandler.Handler(r)
 
- 
-	http.ListenAndServe(":8080", handler)
+    http.ListenAndServe(":8080", handler)
 }
+
  
