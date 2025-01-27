@@ -7,10 +7,9 @@ import (
 )
 
 var jwtSecret = []byte("your_secret_key")
-
-// GenerateJWT generates an access and refresh token
+ 
 func GenerateJWT(userID int) (string, string, error) {
-	// Access token
+ 
 	accessTokenClaims := jwt.MapClaims{
 		"user_id": userID,
 		"exp":     time.Now().Add(time.Minute * 15).Unix(),
@@ -21,7 +20,7 @@ func GenerateJWT(userID int) (string, string, error) {
 		return "", "", err
 	}
 
-	// Refresh token
+ 
 	refreshTokenClaims := jwt.MapClaims{
 		"user_id": userID,
 		"exp":     time.Now().Add(time.Hour * 24 * 7).Unix(),
