@@ -12,22 +12,20 @@ type User struct {
 	Email        string
 	PasswordHash string
 }
-
-// CreateUser creates a new user with a hashed password
+ 
 func CreateUser(db *sql.DB, username, email, password string) error {
-	tx, err := db.Begin() // Start a transaction
+	tx, err := db.Begin()  
 	if err != nil {
 		return err
 	}
-
-	// Hash the password
+ 
 	passwordHash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
 		tx.Rollback()
 		return err
 	}
 
-	// Insert user into the database
+	 
 	_, err = tx.Exec(`
 		INSERT INTO users (username, email, password_hash) 
 		VALUES ($1, $2, $3)`, username, email, string(passwordHash))
@@ -38,8 +36,7 @@ func CreateUser(db *sql.DB, username, email, password string) error {
 
 	return tx.Commit()
 }
-
-// AuthenticateUser authenticates a user by username/email and password
+ 
 func AuthenticateUser(db *sql.DB, email, password string) (*User, error) {
 	var user User
 	err := db.QueryRow(`
@@ -48,8 +45,7 @@ func AuthenticateUser(db *sql.DB, email, password string) (*User, error) {
 	if err != nil {
 		return nil, errors.New("invalid credentials")
 	}
-
-	// Compare the password
+ 
 	if err := bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(password)); err != nil {
 		return nil, errors.New("invalid credentials")
 	}
