@@ -8,10 +8,8 @@ import (
 	
 )
 
-// CheckAuthMiddleware проверяет токен в заголовке Authorization
 func CheckAuthMiddleware(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		// Проверяем наличие Authorization заголовка
 		authHeader := r.Header.Get("Authorization")
 		if authHeader == "" {
 			w.WriteHeader(http.StatusUnauthorized)
@@ -20,8 +18,6 @@ func CheckAuthMiddleware(next http.HandlerFunc) http.HandlerFunc {
 			})
 			return
 		}
-
-		// Проверяем правильность формата Bearer токена
 		tokenString := strings.TrimPrefix(authHeader, "Bearer ")
 		if tokenString == authHeader {
 			w.WriteHeader(http.StatusUnauthorized)
@@ -30,8 +26,6 @@ func CheckAuthMiddleware(next http.HandlerFunc) http.HandlerFunc {
 			})
 			return
 		}
-
-		// Проверяем действительность токена
 		valid, err := utils.CheckAccessToken(tokenString)
 		if err != nil || !valid {
 			w.WriteHeader(http.StatusUnauthorized)
@@ -40,8 +34,6 @@ func CheckAuthMiddleware(next http.HandlerFunc) http.HandlerFunc {
 			})
 			return
 		}
-
-		// Если токен валиден, передаем управление дальше
 		next.ServeHTTP(w, r)
 	}
 }

@@ -3,7 +3,6 @@ package models
 import (
 	"database/sql"
 	"errors"
-//	"fmt"
 	"time"
 )
 
@@ -52,33 +51,6 @@ func GetDraftByID(db *sql.DB, draftID int) (*Draft, error) {
 	return &draft, nil
 }
 
-/*
-func GetAllDrafts(db *sql.DB) ([]Draft, error) {
-	rows, err := db.Query(`
-		SELECT draft_id, draft_name, draft_description, likes, created_at, draft_author
-		FROM drafts`)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-
-	var drafts []Draft
-	for rows.Next() {
-		var draft Draft
-		err := rows.Scan(&draft.ID, &draft.Name, &draft.Description, &draft.Likes, &draft.CreatedAt, &draft.AuthorID)
-		if err != nil {
-			return nil, err
-		}
-		drafts = append(drafts, draft)
-	}
-
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-
-	return drafts, nil
-}
-*/
 
 func GetAllDrafts(db *sql.DB) ([]Draft, error) {
 	rows, err := db.Query(`
