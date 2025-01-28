@@ -2,23 +2,19 @@ package db
 
 import (
 	"database/sql"
+	"fmt"
+	"io/ioutil"
 	"log"
 
 	_ "github.com/lib/pq"
-	
-	
-	"fmt"
-	"io/ioutil"
-	 
-
-
 )
+
 var DB *sql.DB
 
 func InitDB() {
 	var err error
 	connStr := "postgres://test:test@localhost/figma?sslmode=disable"
-	DB, err = sql.Open("postgres", connStr)
+	DB, err = sql.Open("postgres", connStr)  
 	if err != nil {
 		log.Fatal("Error connecting to the database:", err)
 	}
@@ -30,18 +26,32 @@ func InitDB() {
 	RunMigration()
 }
 
-
-
 func RunMigration() {
-	// Чтение SQL-скрипта из файла
-	//migrationScript, err := ioutil.ReadFile("../migrations/SignUp.sql")
 	migrationScript, err := ioutil.ReadFile("C:/Users/wotbl/go-figma/migrations/SignUp.sql")
-
 	if err != nil {
 		log.Fatal("Error reading migration file:", err)
 	}
 
-	// Выполнение SQL-скрипта
+	_, err = DB.Exec(string(migrationScript))
+	if err != nil {
+		log.Fatal("Error running migration:", err)
+	}
+
+	migrationScript, err = ioutil.ReadFile("C:/Users/wotbl/go-figma/migrations/CreateDraft.sql")
+	if err != nil {
+		log.Fatal("Error reading migration file:", err)
+	}
+
+	_, err = DB.Exec(string(migrationScript))
+	if err != nil {
+		log.Fatal("Error running migration:", err)
+	}
+
+	migrationScript, err = ioutil.ReadFile("C:/Users/wotbl/go-figma/migrations/CreateFigure.sql")
+	if err != nil {
+		log.Fatal("Error reading migration file:", err)
+	}
+
 	_, err = DB.Exec(string(migrationScript))
 	if err != nil {
 		log.Fatal("Error running migration:", err)
@@ -49,3 +59,6 @@ func RunMigration() {
 
 	fmt.Println("Migration executed successfully")
 }
+
+
+ 
