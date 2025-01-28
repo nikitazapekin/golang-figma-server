@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"time"
 	"todo-app/db"
 	"todo-app/models"
 	"todo-app/utils"
@@ -71,12 +72,20 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	}
 
  
-	http.SetCookie(w, &http.Cookie{
-		Name:     "refresh_token",
-		Value:    refreshToken,
-		HttpOnly: true,
-		Path:     "/",
-	})
+ 
+expiration := time.Now().Add(7 * 24 * time.Hour)  
+
+http.SetCookie(w, &http.Cookie{
+    Name:     "refresh_token",
+    Value:    refreshToken,
+    HttpOnly: true,
+    Path:     "/",
+    Expires:  expiration,  
+    Secure:   false, 
+    SameSite: http.SameSiteStrictMode,  
+})
+
+
 
 	json.NewEncoder(w).Encode(map[string]string{"access_token": accessToken})
 }
