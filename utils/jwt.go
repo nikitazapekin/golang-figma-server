@@ -1,7 +1,9 @@
 package utils
 
 import (
+	"encoding/json"
 	"errors"
+	"net/http"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
@@ -72,4 +74,57 @@ func CheckAccessToken(tokenString string) (bool, error) {
 		return false, err
 	}
 	return true, nil
+}
+ 
+
+
+// Пример endpoint для обновления access_token
+func RefreshToken(w http.ResponseWriter, r *http.Request) {
+    // Получаем refresh_token из cookie
+    cookie, err := r.Cookie("refresh_token")
+    if err != nil {
+        http.Error(w, "Refresh token not found", http.StatusUnauthorized)
+        return
+    }
+
+    // Проверяем refresh_token и генерируем новый access_token
+    accessToken, err := generateNewAccessToken(cookie.Value)
+    if err != nil {
+        http.Error(w, "Invalid refresh token", http.StatusUnauthorized)
+        return
+    }
+
+    // Отправляем новый access_token клиенту
+    w.Header().Set("Content-Type", "application/json")
+    json.NewEncoder(w).Encode(map[string]string{
+        "access_token": accessToken,
+    })
+}
+
+
+// Функция для генерации нового access_token
+func generateNewAccessToken(refreshToken string) (string, error) {
+	// Проверяем действительность refresh_token (например, проверка в базе данных или верификация JWT)
+	claims := &jwt.StandardClaims{}
+	_, err := jwt.ParseWithClaims(refreshToken, claims, func(token *jwt.Token) (interface{}, error) {
+		return JwtSecret, nil
+	})
+
+	if err != nil {
+		return "", err // Если ошибка верификации, возвращаем ошибку
+	}
+
+	// Если refresh_token действителен, генерируем новый access_token
+	newAccessToken := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"exp":     time.Now().Add(time.Hour * 1).Unix(), // Новый access_token с временем жизни 1 час
+		"user_id": claims.Subject, // Здесь предполагается, что user_id сохранен в claims
+	})
+
+	// Подписываем новый токен
+	tokenString, err := newAccessToken.SignedString(JwtSecret)
+	if err != nil {
+		return "", err
+	}
+
+	return tokenString, nil
 }
