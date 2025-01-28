@@ -8,5 +8,6 @@ import (
 
 func InitRoutes(r *mux.Router) {
 	SetAuthRoutes(r);
+	SetDraftsRoutes(r)
 }
  

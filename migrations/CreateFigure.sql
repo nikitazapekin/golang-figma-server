@@ -15,7 +15,5 @@ CREATE TABLE IF NOT EXISTS figures (
     figure_text_font VARCHAR(100) DEFAULT NULL,
     CONSTRAINT fk_draft FOREIGN KEY (draft_id) REFERENCES drafts(draft_id) ON DELETE CASCADE
 );
-
--- Создаем хеш-индексы для быстрого доступа
-CREATE INDEX idx_figure_id ON figures USING HASH (figure_id);
-CREATE INDEX idx_draft_id ON figures USING HASH (draft_id);
+CREATE INDEX IF NOT EXISTS idx_figure_id ON figures USING HASH (figure_id);
+CREATE INDEX IF NOT EXISTS idx_draft_id ON figures USING HASH (draft_id);

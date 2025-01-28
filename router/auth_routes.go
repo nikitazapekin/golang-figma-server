@@ -11,6 +11,7 @@ import (
 func SetAuthRoutes(r *mux.Router) {
     r.HandleFunc("/register", controllers.Register).Methods("POST")
     r.HandleFunc("/login", controllers.Login).Methods("POST")
+    r.HandleFunc("/validate-token", controllers.ValidateToken).Methods("GET")
 }
 
 

@@ -6,7 +6,7 @@ import (
 	"github.com/dgrijalva/jwt-go"
 )
 
-var jwtSecret = []byte("your_secret_key")
+var JwtSecret = []byte("your_secret_key")
  
 func GenerateJWT(userID int) (string, string, error) {
  
@@ -15,7 +15,7 @@ func GenerateJWT(userID int) (string, string, error) {
 		"exp":     time.Now().Add(time.Minute * 15).Unix(),
 	}
 	accessToken := jwt.NewWithClaims(jwt.SigningMethodHS256, accessTokenClaims)
-	accessTokenString, err := accessToken.SignedString(jwtSecret)
+	accessTokenString, err := accessToken.SignedString(JwtSecret)
 	if err != nil {
 		return "", "", err
 	}
@@ -26,7 +26,7 @@ func GenerateJWT(userID int) (string, string, error) {
 		"exp":     time.Now().Add(time.Hour * 24 * 7).Unix(),
 	}
 	refreshToken := jwt.NewWithClaims(jwt.SigningMethodHS256, refreshTokenClaims)
-	refreshTokenString, err := refreshToken.SignedString(jwtSecret)
+	refreshTokenString, err := refreshToken.SignedString(JwtSecret)
 	if err != nil {
 		return "", "", err
 	}
