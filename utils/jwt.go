@@ -72,7 +72,7 @@ func CheckAccessToken(tokenString string) (bool, error) {
 	}
 	return true, nil
 }
-  
+  /*
 func RefreshToken(w http.ResponseWriter, r *http.Request) {
  
 	cookie, err := r.Cookie("refresh_token")
@@ -92,7 +92,59 @@ func RefreshToken(w http.ResponseWriter, r *http.Request) {
 		"access_token": accessToken,
 	})
 }
-func generateNewAccessToken(refreshToken string) (string, error) {
+	*/
+
+
+	func RefreshToken(w http.ResponseWriter, r *http.Request) {
+		cookie, err := r.Cookie("refresh_token")
+		if err != nil || cookie.Value == "" {
+			// Удаление куки
+			http.SetCookie(w, &http.Cookie{
+				Name:     "refresh_token",
+				Value:    "",
+				Path:     "/",
+				Expires:  time.Unix(0, 0),
+				HttpOnly: true,
+				Secure:   false,
+				SameSite: http.SameSiteStrictMode,
+			})
+	
+			w.WriteHeader(http.StatusUnauthorized)
+			json.NewEncoder(w).Encode(map[string]interface{}{
+				"error": "Refresh token not found or invalid",
+			})
+			return
+		}
+	
+		accessToken, err := GenerateNewAccessToken(cookie.Value)
+		if err != nil {
+			 
+			http.SetCookie(w, &http.Cookie{
+				Name:     "refresh_token",
+				Value:    "",
+				Path:     "/",
+				Expires:  time.Unix(0, 0),
+				HttpOnly: true,
+				Secure:   false,
+				SameSite: http.SameSiteStrictMode,
+			})
+	
+			w.WriteHeader(http.StatusUnauthorized)
+			json.NewEncoder(w).Encode(map[string]interface{}{
+				"error": "Invalid refresh token",
+			})
+			return
+		}
+	 
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(map[string]string{
+			"access_token": accessToken,
+		})
+	}
+
+	
+
+func GenerateNewAccessToken(refreshToken string) (string, error) {
 	valid, userID := CheckRefreshToken(refreshToken)
 	if !valid {
 		return "", fmt.Errorf("invalid refresh token")
@@ -104,3 +156,5 @@ func generateNewAccessToken(refreshToken string) (string, error) {
 
 	return accessToken, nil
 }
+
+
