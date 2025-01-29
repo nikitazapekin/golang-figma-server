@@ -153,10 +153,9 @@ func getCookieValue(r *http.Request) (string, error) {
 
 
 
-
-// Переименованный обработчик
+ 
 func CookieHandler(w http.ResponseWriter, r *http.Request) {
-    // Получаем куку по имени
+    
     cookie, err := r.Cookie("refresh_token")
     cookieAccess, errr := r.Cookie("access_token")
     if err != nil {
@@ -164,12 +163,12 @@ func CookieHandler(w http.ResponseWriter, r *http.Request) {
         fmt.Println("errrrrr")
         if err == http.ErrNoCookie {
             http.Error(w, "Cookie not found", http.StatusUnauthorized)
-          //  return
+        
         }
         http.Error(w, "Error retrieving cookie", http.StatusInternalServerError)
-      //  return
+       
     }
     fmt.Println(errr)
-    // Выводим значение куки
+   
     fmt.Println(w, "Secure Cookierrrr Value: %s", cookie.Value, "ACESS", cookieAccess.Value)
 }
