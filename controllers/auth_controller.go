@@ -70,7 +70,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	 
-refreshTokenExpiration := time.Now().Add(120 *  time.Minute)
+refreshTokenExpiration := time.Now().Add(1200 *  time.Minute)
 	http.SetCookie(w, &http.Cookie{
 		Name:     "refresh_token",
 		Value:    refreshToken,
@@ -82,7 +82,7 @@ refreshTokenExpiration := time.Now().Add(120 *  time.Minute)
 	})
 
  
-	accessTokenExpiration := time.Now().Add(10 * time.Minute)
+	accessTokenExpiration := time.Now().Add(1000 * time.Minute)
 	http.SetCookie(w, &http.Cookie{
 		Name:     "access_token",
 		Value:    accessToken,

@@ -10,7 +10,7 @@ import (
 )
 
 func ValidateToken(w http.ResponseWriter, r *http.Request) {
-	// Устанавливаем заголовки CORS для этого конкретного контроллера
+ 
 	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000") 
 	w.Header().Set("Access-Control-Allow-Credentials", "true")           
 	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")   
@@ -23,8 +23,7 @@ func ValidateToken(w http.ResponseWriter, r *http.Request) {
 	}
 
 	log.Printf("Получен запрос для проверки токенов: %s", r.URL)
-
-	// 🛠 **Диагностика заголовков и куков**
+ 
 	log.Println("🔹 Все заголовки запроса:")
 	for name, values := range r.Header {
 		log.Printf("%s: %s", name, values)
@@ -34,8 +33,7 @@ func ValidateToken(w http.ResponseWriter, r *http.Request) {
 	for _, cookie := range r.Cookies() {
 		log.Printf("Кука: %s = %s", cookie.Name, cookie.Value)
 	}
-
-	// Получение значений cookies
+ 
 	accessCookie, errAccess := r.Cookie("access_token")
 	refreshCookie, errRefresh := r.Cookie("refresh_token")
 
@@ -50,8 +48,7 @@ func ValidateToken(w http.ResponseWriter, r *http.Request) {
 	} else {
 		log.Printf("[INFO] Найден refresh_token: %s", refreshCookie.Value)
 	}
-
-	// Оба токена отсутствуют → ошибка
+ 
 	if errAccess != nil && errRefresh != nil {
 		log.Println("[ERROR] Оба токена отсутствуют, отклоняем запрос")
 		w.WriteHeader(http.StatusUnauthorized)
@@ -61,8 +58,7 @@ func ValidateToken(w http.ResponseWriter, r *http.Request) {
 		})
 		return
 	}
-
-	// Проверка access_token
+ 
 	if errAccess == nil {
 		accessToken := accessCookie.Value
 		valid, err := utils.CheckAccessToken(accessToken)
@@ -81,8 +77,7 @@ func ValidateToken(w http.ResponseWriter, r *http.Request) {
 			log.Println("[WARNING] Access token невалиден или истек")
 		}
 	}
-
-	// Если access_token невалиден, проверяем refresh_token
+ 
 	if errRefresh == nil {
 		refreshToken := refreshCookie.Value
 		log.Println("[INFO] Проверяем валидность refresh_token...")
@@ -110,14 +105,14 @@ func ValidateToken(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		// Устанавливаем новый access_token в cookie
+		 
 		http.SetCookie(w, &http.Cookie{
 			Name:     "access_token",
 			Value:    newAccessToken,
 			HttpOnly: true,
 			Path:     "/",
-			Expires:  time.Now().Add(120 * time.Minute),
-			Secure:   false, // для локальной разработки можно оставить false, для продакшн - true
+			Expires:  time.Now().Add(1200 * time.Minute),
+			Secure:   false, 
 			SameSite: http.SameSiteStrictMode,
 		})
 
@@ -138,8 +133,7 @@ func ValidateToken(w http.ResponseWriter, r *http.Request) {
 		"message":      "Session is inactive, please login again",
 	})
 }
-
-// Функция для получения значения cookie
+ 
 func getCookieValue(r *http.Request) (string, error) {
 	cookie, err := r.Cookie("refresh_token")
 	if err != nil {

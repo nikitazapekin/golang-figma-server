@@ -156,3 +156,37 @@ func DeleteDraft(w http.ResponseWriter, r *http.Request) {
 		"message": "Draft deleted successfully",
 	})
 }
+
+
+
+
+
+
+func GetPersonalDrafts(w http.ResponseWriter, r *http.Request) {
+	userIDStr := r.URL.Query().Get("user_id")
+ 
+	userID, err := strconv.Atoi(userIDStr)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"code":    http.StatusBadRequest,
+			"message": "Invalid user_id parameter",
+		})
+		return
+	}
+
+	// Получаем чертежи пользователя
+	drafts, err := models.GetPersonalDraftsById(db.DB, userID)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"code":    http.StatusInternalServerError,
+			"message": "Failed to retrieve drafts",
+		})
+		return
+	}
+
+	// Отправляем найденные чертежи
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(drafts)
+}

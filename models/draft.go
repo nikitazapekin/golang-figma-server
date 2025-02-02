@@ -66,8 +66,7 @@ func GetAllDrafts(db *sql.DB) ([]Draft, error) {
 		FROM drafts d
 		JOIN users u ON d.draft_author = u.id
 	`)
-
-	//fmt.Println(rows);
+ 
 	if err != nil {
 		return nil, err
 	}
@@ -103,4 +102,45 @@ func DeleteDraft(db *sql.DB, draftID int) error {
 	_, err := db.Exec(`
 		DELETE FROM drafts WHERE draft_id = $1`, draftID)
 	return err
+}
+
+
+func GetPersonalDraftsById(db *sql.DB, userID int) ([]Draft, error) {
+	rows, err := db.Query(`
+		SELECT 
+			d.draft_id, 
+			d.draft_name, 
+			d.draft_description, 
+			d.likes, 
+			d.created_at, 
+			d.draft_author, 
+			u.username AS author_username, 
+			u.email AS author_email
+		FROM drafts d
+		JOIN users u ON d.draft_author = u.id
+		WHERE d.draft_author = $1
+	`, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var drafts []Draft
+	for rows.Next() {
+		var draft Draft
+		err := rows.Scan(
+			&draft.ID, &draft.Name, &draft.Description, &draft.Likes, 
+			&draft.CreatedAt, &draft.AuthorID, &draft.AuthorUsername, &draft.AuthorEmail,
+		)
+		if err != nil {
+			return nil, err
+		}
+		drafts = append(drafts, draft)
+	}
+ 
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return drafts, nil
 }

@@ -14,5 +14,7 @@ func SetDraftsRoutes(r *mux.Router) {
 	r.HandleFunc("/createDraft", middleware.CheckAuthMiddleware(http.HandlerFunc(controllers.CreateDraft))).Methods("POST")
 	r.HandleFunc("/drafts", middleware.CheckAuthMiddleware(http.HandlerFunc(controllers.UpdateDraft))).Methods("PUT")
 	r.HandleFunc("/drafts", middleware.CheckAuthMiddleware(http.HandlerFunc(controllers.DeleteDraft))).Methods("DELETE")
+
+	r.HandleFunc("/personalDrafts", middleware.CheckAuthMiddleware(http.HandlerFunc(controllers.GetPersonalDrafts))).Methods("GET")
 }
 

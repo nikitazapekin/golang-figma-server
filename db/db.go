@@ -57,6 +57,21 @@ func RunMigration() {
 		log.Fatal("Error running migration:", err)
 	}
 
+
+
+
+	migrationScript, err = ioutil.ReadFile("C:/Users/wotbl/go-figma/migrations/CreateLine.sql")
+	if err != nil {
+		log.Fatal("Error reading migration file:", err)
+	}
+
+	_, err = DB.Exec(string(migrationScript))
+	if err != nil {
+		log.Fatal("Error running migration:", err)
+	}
+
+
+
 	fmt.Println("Migration executed successfully")
 }
 
