@@ -23,7 +23,7 @@ type LineObject struct {
 	Type        string  `json:"type"`
 	Width       float64 `json:"width"`
 	Height      float64 `json:"height"`
-	Path        string  `json:"path"`  
+	Path        []map[string]float64 `json:"path"` 
 	StrokeWidth float64 `json:"strokeWidth"`
 	Color       string  `json:"color"`
 	Layout      int     `json:"layout"`
